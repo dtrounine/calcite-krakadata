@@ -111,6 +111,7 @@ SqlNodeList TableElementList() :
         <COMMA> TableElement(list)
     )*
     <RPAREN> {
+        DdlParserUtils.postParseTableElements(list);
         return new SqlNodeList(list, s.end(this));
     }
 }
@@ -125,6 +126,7 @@ void TableElement(List<SqlNode> list) :
     final SqlNodeList columnList;
     final Span s = Span.of();
     final ColumnStrategy strategy;
+    final boolean autoincrement;
 }
 {
     LOOKAHEAD(2) id = SimpleIdentifier()
@@ -178,11 +180,25 @@ void TableElement(List<SqlNode> list) :
         }
     |
         <PRIMARY>  { s.add(this); } <KEY>
-        columnList = ParenthesizedSimpleIdentifierList() {
-            list.add(SqlDdlNodes.primary(s.end(columnList), name, columnList));
+        columnList = ParenthesizedSimpleIdentifierList()
+        autoincrement = Autoincrement() {
+            SqlNode node = autoincrement
+                ? SqlDdlNodesExtended.primaryKeyAutoincrement(s.end(columnList), name, columnList)
+                : SqlDdlNodes.primary(s.end(columnList), name, columnList);
+            list.add(node);
         }
     )
 }
+
+boolean Autoincrement() :
+{
+}
+{
+    <AUTOINCREMENT> { return true; }
+|
+    { return false; }
+}
+
 
 SqlNodeList AttributeDefList() :
 {
@@ -260,7 +276,7 @@ SqlCreate SqlCreateTable(Span s, boolean replace) :
         [ tableElementList = TableElementList() ]
         [ <AS> query = OrderedQueryOrExpr(ExprContext.ACCEPT_QUERY) ]
         {
-            return SqlDdlNodes.createTable(s.end(this), replace, ifNotExists, id, tableElementList, query);
+            return SqlDdlNodesExtended.createTable(s.end(this), replace, ifNotExists, id, tableElementList, query);
         }
     )
 }

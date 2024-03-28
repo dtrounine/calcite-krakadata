@@ -32,6 +32,8 @@ data: {
       "org.apache.calcite.sql.SqlTruncate"
       "org.apache.calcite.sql.ddl.SqlCreateTableLike"
       "org.apache.calcite.sql.ddl.SqlDdlNodes"
+      "org.apache.calcite.sql.ddl.SqlDdlNodesExtended"
+      "org.apache.calcite.sql.ddl.utils.DdlParserUtils"
     ]
 
     # List of new keywords. Example: "DATABASES", "TABLES". If the keyword is
@@ -44,6 +46,7 @@ data: {
       "JAR"
       "FILE"
       "ARCHIVE"
+      "AUTOINCREMENT"
     ]
 
     # List of non-reserved keywords to add;

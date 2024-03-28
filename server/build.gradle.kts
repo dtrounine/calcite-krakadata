@@ -15,12 +15,19 @@
  * limitations under the License.
  */
 import com.github.autostyle.gradle.AutostyleTask
+import groovy.util.Node
+import groovy.util.NodeList
+import java.net.URI
 
 plugins {
     calcite.fmpp
     calcite.javacc
     id("com.github.vlsi.ide")
+    id("maven-publish")
+    id("com.google.cloud.artifactregistry.gradle-plugin") version "2.2.1"
 }
+
+version "1.36.0"
 
 dependencies {
     api(project(":core"))
@@ -67,4 +74,28 @@ ide {
         generatedJavaSources(javacc.get(), javacc.get().output.get().asFile, sourceSets.named(sourceSet))
 
     generatedSource(javaCCMain, "main")
+}
+
+publishing {
+    publications {
+        group = "io.dtrounine.krakadata"
+        create<MavenPublication>("io.dtrounine.krakadata") {
+            artifactId = "calcite-server"
+            version = "1.36.0"
+            from(components["java"])
+            // Remove BOM from generated POM because we don't have it
+            pom.withXml {
+                val root = asNode()
+                val nodes = root["dependencyManagement"] as NodeList
+                if (nodes.isNotEmpty()) {
+                    root.remove(nodes.first() as Node)
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            url = uri("artifactregistry://europe-west9-maven.pkg.dev/dtrunin-data/krakadata")
+        }
+    }
 }

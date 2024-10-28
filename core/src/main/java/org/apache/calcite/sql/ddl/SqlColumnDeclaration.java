@@ -40,7 +40,11 @@ import java.util.List;
  */
 public class SqlColumnDeclaration extends SqlCall {
   private static final SqlSpecialOperator OPERATOR =
-      new SqlSpecialOperator("COLUMN_DECL", SqlKind.COLUMN_DECL);
+      new SqlSpecialOperator("COLUMN_DECL", SqlKind.COLUMN_DECL) {
+        @Override public void unparse(SqlWriter writer, SqlCall call, int leftPrec, int rightPrec) {
+          call.unparse(writer, leftPrec, rightPrec);
+        }
+      };
 
   public final SqlIdentifier name;
   public final SqlDataTypeSpec dataType;

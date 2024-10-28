@@ -37,7 +37,11 @@ import java.util.List;
  */
 public class SqlCheckConstraint extends SqlCall {
   private static final SqlSpecialOperator OPERATOR =
-      new SqlSpecialOperator("CHECK", SqlKind.CHECK);
+      new SqlSpecialOperator("CHECK", SqlKind.CHECK) {
+        @Override public void unparse(SqlWriter writer, SqlCall call, int leftPrec, int rightPrec) {
+          call.unparse(writer, leftPrec, rightPrec);
+        }
+      };
 
   private final @Nullable SqlIdentifier name;
   private final SqlNode expression;

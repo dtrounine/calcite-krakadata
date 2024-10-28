@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.calcite.postgres;
 import org.apache.calcite.sql.SqlCall;
 import org.apache.calcite.sql.SqlNode;
@@ -24,6 +23,9 @@ import org.apache.calcite.sql.ddl.SqlColumnDeclarationAutoincrement;
 import org.apache.calcite.sql.ddl.SqlPrimaryKeyAutoincrement;
 import org.apache.calcite.sql.dialect.PostgresqlSqlDialect;
 
+/**
+ * Extension of PostgresSqlDialect adding rewrite rules for autoincrement.
+ */
 public class PostgresqlDdlDialect extends PostgresqlSqlDialect {
 
   public static final PostgresqlDdlDialect DEFAULT = new PostgresqlDdlDialect(DEFAULT_CONTEXT);
@@ -32,8 +34,7 @@ public class PostgresqlDdlDialect extends PostgresqlSqlDialect {
     super(context);
   }
 
-  @Override
-  public void unparseCall(SqlWriter writer, SqlCall call, int leftPrec, int rightPrec) {
+  @Override public void unparseCall(SqlWriter writer, SqlCall call, int leftPrec, int rightPrec) {
 //    System.out.println("POSTGRESQL DIALECT: " + call + ", kind=" + call.getKind());
     switch (call.getKind()) {
     case COLUMN_DECL:
@@ -48,16 +49,25 @@ public class PostgresqlDdlDialect extends PostgresqlSqlDialect {
     }
   }
 
-  private void unparseColumnDecl(SqlWriter writer, SqlColumnDeclaration colDecl, int leftPrec, int rightPrec) {
+  private void unparseColumnDecl(SqlWriter writer, SqlColumnDeclaration colDecl, int leftPrec,
+                                 int rightPrec) {
     if (colDecl instanceof SqlColumnDeclarationAutoincrement) {
       colDecl.name.unparse(writer, 0, 0);
       final String serialTypeName;
       switch (colDecl.dataType.getTypeName().getSimple()) {
-      case "SMALLINT": serialTypeName = "SMALLSERIAL"; break;
+      case "SMALLINT":
+        serialTypeName = "SMALLSERIAL";
+        break;
       case "INT":
-      case "INTEGER": serialTypeName = "SERIAL"; break;
-      case "BIGINT": serialTypeName = "BIGSERIAL"; break;
-      default: throw new UnsupportedOperationException("Unsupported type for autoincrement column: " + colDecl.dataType.getTypeName());
+      case "INTEGER":
+        serialTypeName = "SERIAL";
+        break;
+      case "BIGINT":
+        serialTypeName = "BIGSERIAL";
+        break;
+      default:
+        throw new UnsupportedOperationException("Unsupported type for autoincrement column: "
+            + colDecl.dataType.getTypeName());
       }
       writer.keyword(serialTypeName);
       if (Boolean.FALSE.equals(colDecl.dataType.getNullable())) {
@@ -65,19 +75,21 @@ public class PostgresqlDdlDialect extends PostgresqlSqlDialect {
       }
       SqlNode expression = colDecl.expression;
       if (expression != null) {
-        throw new UnsupportedOperationException("Expression is not allowed for autoincrement column.");
+        throw new UnsupportedOperationException(
+            "Expression is not allowed for autoincrement column.");
       }
     } else {
       callSuperUnparseCall(writer, colDecl, leftPrec, rightPrec);
     }
   }
 
-  private void unparsePrimaryKey(SqlWriter writer, SqlCall primaryKey, int leftPrec, int rightPrec) {
+  private void unparsePrimaryKey(SqlWriter writer, SqlCall primaryKey, int leftPrec,
+                                 int rightPrec) {
     // Override default PRIMARY KEY AUTOINCREMENT - don't write AUTOINCREMENT,
     // because in PostgreSQL it's replaced by SERIAL column type
     if (primaryKey instanceof SqlPrimaryKeyAutoincrement) {
       writer.keyword("PRIMARY KEY");
-      ((SqlPrimaryKeyAutoincrement)primaryKey).columnList.unparse(writer, 1, 1);
+      ((SqlPrimaryKeyAutoincrement) primaryKey).columnList.unparse(writer, 1, 1);
     } else {
       callSuperUnparseCall(writer, primaryKey, leftPrec, rightPrec);
     }
@@ -92,4 +104,3 @@ public class PostgresqlDdlDialect extends PostgresqlSqlDialect {
     }
   }
 }
-

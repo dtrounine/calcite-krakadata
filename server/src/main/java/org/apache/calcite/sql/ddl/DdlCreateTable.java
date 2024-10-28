@@ -14,13 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.calcite.sql.ddl;
 
-import org.apache.calcite.sql.*;
+import org.apache.calcite.sql.SqlCall;
+import org.apache.calcite.sql.SqlDialect;
+import org.apache.calcite.sql.SqlIdentifier;
+import org.apache.calcite.sql.SqlNode;
+import org.apache.calcite.sql.SqlNodeList;
+import org.apache.calcite.sql.SqlWriter;
 import org.apache.calcite.sql.parser.SqlParserPos;
+
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+/**
+ * Implements unparse for create table DDL.
+ */
 public class DdlCreateTable extends SqlCreateTable {
 
   protected DdlCreateTable(
@@ -33,8 +41,9 @@ public class DdlCreateTable extends SqlCreateTable {
     super(pos, replace, ifNotExists, name, columnList, query);
   }
 
-  @Override
-  public void unparse(SqlWriter writer, int leftPrec, int rightPrec) {
+  @Override public void unparse(SqlWriter writer, int leftPrec, int rightPrec) {
+//    super.unparse(writer, leftPrec, rightPrec);
+//    if (true) return;
     final SqlDialect dialect = writer.getDialect();
     writer.keyword("CREATE");
     writer.keyword("TABLE");

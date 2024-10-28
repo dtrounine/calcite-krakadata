@@ -17,7 +17,6 @@
 import com.github.autostyle.gradle.AutostyleTask
 import groovy.util.Node
 import groovy.util.NodeList
-import java.net.URI
 
 plugins {
     calcite.fmpp
@@ -27,7 +26,7 @@ plugins {
     id("com.google.cloud.artifactregistry.gradle-plugin") version "2.2.1"
 }
 
-version "1.36.0"
+version = "1.38.0"
 
 dependencies {
     api(project(":core"))
@@ -84,7 +83,7 @@ publishing {
         group = "io.dtrounine.krakadata"
         create<MavenPublication>("io.dtrounine.krakadata") {
             artifactId = "calcite-server"
-            version = "1.36.0"
+            version = "1.38.0"
             from(components["java"])
             // Remove BOM from generated POM because we don't have it
             pom.withXml {

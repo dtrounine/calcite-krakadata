@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 ./gradlew \
-	-PallowUncommittedChanges \
-	-PasfTestNexusUsername=lobster \
-	-PasfTestNexusPassword=herring \
-	server:publish
+  -PallowUncommittedChanges \
+  -PasfTestNexusUsername=lobster \
+  -PasfTestNexusPassword=herring \
+  server:publish

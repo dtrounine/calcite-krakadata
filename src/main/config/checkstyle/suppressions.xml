@@ -52,6 +52,9 @@ limitations under the License.
        'core' and 'server'. -->
   <suppress checks="JavadocPackage" files="src[/\\]test[/\\]java[/\\]"/>
   <suppress checks="JavadocPackage" files="src[/\\]main[/\\]java[/\\]org[/\\]apache[/\\]calcite[/\\]server[/\\]"/>
+  <suppress checks="JavadocPackage" files="src[/\\]main[/\\]java[/\\]org[/\\]apache[/\\]calcite[/\\]postgres[/\\]"/>
+  <suppress checks="JavadocPackage" files="src[/\\]main[/\\]java[/\\]org[/\\]apache[/\\]calcite[/\\]sql[/\\]ddl[/\\]"/>
+  <suppress checks="JavadocPackage" files="src[/\\]main[/\\]java[/\\]org[/\\]apache[/\\]calcite[/\\]sql[/\\]ddl[/\\]utils[/\\]"/>
 
   <!-- Method names in Resource can have underscores -->
   <suppress checks="MethodName" files="CalciteResource.java"/>

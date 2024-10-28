@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.calcite.sql.ddl;
 
 import org.apache.calcite.schema.ColumnStrategy;
@@ -22,8 +21,12 @@ import org.apache.calcite.sql.SqlDataTypeSpec;
 import org.apache.calcite.sql.SqlIdentifier;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.parser.SqlParserPos;
+
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+/**
+ * Marker class for autoincrement declaration.
+ */
 public class SqlColumnDeclarationAutoincrement extends SqlColumnDeclaration {
 
   public SqlColumnDeclarationAutoincrement(

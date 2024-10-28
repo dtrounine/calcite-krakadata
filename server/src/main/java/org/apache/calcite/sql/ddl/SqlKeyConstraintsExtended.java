@@ -14,12 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.calcite.sql.ddl;
 
 import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.SqlSpecialOperator;
 
+/**
+ * PRIMARY KEY AUTOINCREMENT.
+ */
 public class SqlKeyConstraintsExtended {
   private SqlKeyConstraintsExtended() {}
 

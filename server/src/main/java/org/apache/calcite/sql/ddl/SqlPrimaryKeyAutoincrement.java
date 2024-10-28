@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.calcite.sql.ddl;
 
 import org.apache.calcite.sql.SqlIdentifier;
@@ -22,17 +21,22 @@ import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.SqlOperator;
 import org.apache.calcite.sql.SqlWriter;
 import org.apache.calcite.sql.parser.SqlParserPos;
+
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+/**
+ * Autoincrement column constraint.
+ */
 public class SqlPrimaryKeyAutoincrement extends SqlKeyConstraint {
 
   public final SqlNodeList columnList;
+
   /**
    * Creates a SqlKeyConstraint.
    *
-   * @param pos
-   * @param name
-   * @param columnList
+   * @param pos position
+   * @param name name
+   * @param columnList column list
    */
   SqlPrimaryKeyAutoincrement(SqlParserPos pos, @Nullable SqlIdentifier name,
       SqlNodeList columnList) {
@@ -40,15 +44,13 @@ public class SqlPrimaryKeyAutoincrement extends SqlKeyConstraint {
     this.columnList = columnList;
   }
 
-  @Override
-  public void unparse(SqlWriter writer, int leftPrec, int rightPrec) {
+  @Override public void unparse(SqlWriter writer, int leftPrec, int rightPrec) {
     writer.keyword("PRIMARY KEY");
     columnList.unparse(writer, 1, 1);
     writer.keyword("AUTOINCREMENT");
   }
 
-  @Override
-  public SqlOperator getOperator() {
+  @Override public SqlOperator getOperator() {
     return SqlKeyConstraintsExtended.PRIMARY_AUTOINCREMENT;
   }
 }

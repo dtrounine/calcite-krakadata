@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.calcite.sql.ddl;
 
 import org.apache.calcite.sql.SqlIdentifier;
@@ -22,6 +21,9 @@ import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql.SqlNodeList;
 import org.apache.calcite.sql.parser.SqlParserPos;
 
+/**
+ * Helper function for creating DDL-related objects.
+ */
 public class SqlDdlNodesExtended {
 
   private SqlDdlNodesExtended() {}

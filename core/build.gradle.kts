@@ -19,6 +19,8 @@ import com.github.vlsi.gradle.crlf.CrLfSpec
 import com.github.vlsi.gradle.crlf.LineEndings
 import com.github.vlsi.gradle.ide.dsl.settings
 import com.github.vlsi.gradle.ide.dsl.taskTriggers
+import groovy.util.Node
+import groovy.util.NodeList
 
 plugins {
     kotlin("jvm")
@@ -26,6 +28,8 @@ plugins {
     id("com.github.vlsi.ide")
     calcite.fmpp
     calcite.javacc
+    id("maven-publish")
+    id("com.google.cloud.artifactregistry.gradle-plugin") version "2.2.1"
 }
 
 val integrationTestConfig: (Configuration.() -> Unit) = {
@@ -46,13 +50,13 @@ val testMysql by configurations.creating(integrationTestConfig)
 dependencies {
     api(project(":linq4j"))
 
-    api("org.locationtech.jts:jts-core")
-    api("org.locationtech.jts.io:jts-io-common")
-    api("org.locationtech.proj4j:proj4j")
+    api("org.locationtech.jts:jts-core:1.19.0")
+    api("org.locationtech.jts.io:jts-io-common:1.19.0")
+    api("org.locationtech.proj4j:proj4j:1.2.2")
     api("com.fasterxml.jackson.core:jackson-annotations")
     api("com.google.errorprone:error_prone_annotations")
     api("com.google.guava:guava")
-    api("org.apache.calcite.avatica:avatica-core")
+    api("org.apache.calcite.avatica:avatica-core:1.25.0")
     api("org.apiguardian:apiguardian-api")
     api("org.checkerframework:checker-qual")
     api("org.slf4j:slf4j-api")
@@ -60,21 +64,21 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-core")
     implementation("com.fasterxml.jackson.core:jackson-databind")
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml")
-    implementation("com.google.uzaygezen:uzaygezen-core") {
+    implementation("com.google.uzaygezen:uzaygezen-core:0.2") {
         exclude("log4j", "log4j").because("conflicts with log4j-slf4j-impl which uses log4j2 and" +
                 " also leaks transitively to projects depending on calcite-core")
     }
-    implementation("com.jayway.jsonpath:json-path")
-    implementation("com.yahoo.datasketches:sketches-core")
-    implementation("commons-codec:commons-codec")
-    implementation("net.hydromatic:aggdesigner-algorithm")
-    implementation("org.apache.commons:commons-dbcp2")
-    implementation("org.apache.commons:commons-lang3")
-    implementation("org.apache.commons:commons-math3")
-    implementation("org.apache.commons:commons-text")
-    implementation("commons-io:commons-io")
-    implementation("org.codehaus.janino:commons-compiler")
-    implementation("org.codehaus.janino:janino")
+    implementation("com.jayway.jsonpath:json-path:2.9.0")
+    implementation("com.yahoo.datasketches:sketches-core:0.9.0")
+    implementation("commons-codec:commons-codec:1.16.0")
+    implementation("net.hydromatic:aggdesigner-algorithm:6.0")
+    implementation("org.apache.commons:commons-dbcp2:2.11.0")
+    implementation("org.apache.commons:commons-lang3:3.13.0")
+    implementation("org.apache.commons:commons-math3:3.6.1")
+    implementation("org.apache.commons:commons-text:1.11.0")
+    implementation("commons-io:commons-io:2.15.0")
+    implementation("org.codehaus.janino:commons-compiler:3.1.11")
+    implementation("org.codehaus.janino:janino:3.1.11")
     annotationProcessor("org.immutables:value")
     compileOnly("org.immutables:value-annotations")
     compileOnly("com.google.code.findbugs:jsr305")
@@ -293,5 +297,45 @@ for (db in listOf("h2", "mysql", "oracle", "postgresql")) {
     }
     integTestAll {
         dependsOn(task)
+    }
+}
+
+publishing {
+    publications {
+        group = "io.dtrounine.krakadata"
+        create<MavenPublication>("io.dtrounine.krakadata") {
+            artifactId = "calcite-core"
+            version = "1.38.0"
+            from(components["java"])
+            // Remove BOM from generated POM because we don't have it
+            pom.withXml {
+                val root = asNode()
+                val nodes = root["dependencyManagement"] as NodeList
+                if (nodes.isNotEmpty()) {
+                    root.remove(nodes.first() as Node)
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            url = uri("artifactregistry://europe-west9-maven.pkg.dev/dtrunin-data/krakadata")
+        }
+    }
+}
+
+tasks.named("initializeNexusStagingRepository").configure {
+    enabled = false
+}
+
+tasks.named { name -> name.endsWith("PublicationToNexusRepository") }.configureEach {
+    enabled = false
+}
+
+tasks {
+    withType<PublishToMavenRepository>().configureEach {
+        if (!name.endsWith("krakadataPublicationToMavenRepository")) { // Match your custom publication name
+            enabled = false
+        }
     }
 }

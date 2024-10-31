@@ -34,7 +34,7 @@ plugins {
     // java-base is needed for platform(...) resolution,
     // see https://github.com/gradle/gradle/issues/14822
     `java-base`
-    publishing
+//    publishing
     // Verification
     checkstyle
     calcite.buildext
@@ -1054,4 +1054,12 @@ allprojects {
             }
         }
     }
+}
+
+tasks.named("initializeNexusStagingRepository").configure {
+    enabled = false
+}
+
+tasks.named { name -> name.endsWith("PublicationToNexusRepository") }.configureEach {
+    enabled = false
 }

@@ -101,3 +101,19 @@ publishing {
         }
     }
 }
+
+tasks.named("initializeNexusStagingRepository").configure {
+    enabled = false
+}
+
+tasks.named { name -> name.endsWith("PublicationToNexusRepository") }.configureEach {
+    enabled = false
+}
+
+tasks {
+    withType<PublishToMavenRepository>().configureEach {
+        if (!name.endsWith("krakadataPublicationToMavenRepository")) { // Match your custom publication name
+            enabled = false
+        }
+    }
+}

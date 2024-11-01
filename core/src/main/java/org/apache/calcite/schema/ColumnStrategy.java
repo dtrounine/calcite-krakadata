@@ -36,7 +36,9 @@ public enum ColumnStrategy {
   /** Column is computed and stored. You cannot insert into it. */
   STORED,
   /** Column is computed and not stored. You cannot insert into it. */
-  VIRTUAL;
+  VIRTUAL,
+  /** Column gets auto incremented value if not specified explicitly in an INSERT. */
+  AUTOINCREMENT;
 
   /**
    * Returns whether you can insert into the column.

@@ -120,6 +120,14 @@ public interface RelDataType {
   boolean isNullable();
 
   /**
+   * Whether this type is autoincrement.
+   *
+   * @return Whether this type is autoincrement.
+   */
+  boolean isAutoincrement();
+
+
+  /**
    * Gets the component type if this type is a collection, otherwise null.
    *
    * @return canonical type descriptor for components

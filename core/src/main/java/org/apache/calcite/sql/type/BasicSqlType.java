@@ -45,6 +45,8 @@ public class BasicSqlType extends AbstractSqlType {
   private final @Nullable SqlCollation collation;
   private final @Nullable SerializableCharset wrappedCharset;
 
+  private final boolean isAutoincrement;
+
   //~ Constructors -----------------------------------------------------------
 
   /**
@@ -60,7 +62,7 @@ public class BasicSqlType extends AbstractSqlType {
 
   protected BasicSqlType(RelDataTypeSystem typeSystem, SqlTypeName typeName,
       boolean nullable) {
-    this(typeSystem, typeName, nullable, PRECISION_NOT_SPECIFIED,
+    this(typeSystem, typeName, nullable, false, PRECISION_NOT_SPECIFIED,
         SCALE_NOT_SPECIFIED, null, null);
     checkPrecScale(typeName, false, false);
   }
@@ -74,7 +76,7 @@ public class BasicSqlType extends AbstractSqlType {
    */
   public BasicSqlType(RelDataTypeSystem typeSystem, SqlTypeName typeName,
       int precision) {
-    this(typeSystem, typeName, false, precision, SCALE_NOT_SPECIFIED, null,
+    this(typeSystem, typeName, false, false, precision, SCALE_NOT_SPECIFIED, null,
         null);
     checkPrecScale(typeName, true, false);
   }
@@ -89,7 +91,7 @@ public class BasicSqlType extends AbstractSqlType {
    */
   public BasicSqlType(RelDataTypeSystem typeSystem, SqlTypeName typeName,
       int precision, int scale) {
-    this(typeSystem, typeName, false, precision, scale, null, null);
+    this(typeSystem, typeName, false, false, precision, scale, null, null);
     checkPrecScale(typeName, true, true);
   }
 
@@ -98,6 +100,7 @@ public class BasicSqlType extends AbstractSqlType {
       RelDataTypeSystem typeSystem,
       SqlTypeName typeName,
       boolean nullable,
+      boolean isAutoincrement,
       int precision,
       int scale,
       @Nullable SqlCollation collation,
@@ -108,6 +111,7 @@ public class BasicSqlType extends AbstractSqlType {
     this.scale = scale;
     this.collation = collation;
     this.wrappedCharset = wrappedCharset;
+    this.isAutoincrement = isAutoincrement;
     computeDigest();
   }
 
@@ -130,7 +134,15 @@ public class BasicSqlType extends AbstractSqlType {
     if (nullable == this.isNullable) {
       return this;
     }
-    return new BasicSqlType(this.typeSystem, this.typeName, nullable,
+    return new BasicSqlType(this.typeSystem, this.typeName, nullable, this.isAutoincrement,
+        this.precision, this.scale, this.collation, this.wrappedCharset);
+  }
+
+  BasicSqlType createWithAutoincrement(boolean isAutoincrement) {
+    if (isAutoincrement == this.isAutoincrement) {
+      return this;
+    }
+    return new BasicSqlType(this.typeSystem, this.typeName, this.isNullable, isAutoincrement,
         this.precision, this.scale, this.collation, this.wrappedCharset);
   }
 
@@ -142,7 +154,7 @@ public class BasicSqlType extends AbstractSqlType {
   BasicSqlType createWithCharsetAndCollation(Charset charset,
       SqlCollation collation) {
     checkArgument(SqlTypeUtil.inCharFamily(this));
-    return new BasicSqlType(this.typeSystem, this.typeName, this.isNullable,
+    return new BasicSqlType(this.typeSystem, this.typeName, this.isNullable, this.isAutoincrement,
         this.precision, this.scale, collation,
         SerializableCharset.forCharset(charset));
   }
@@ -178,6 +190,10 @@ public class BasicSqlType extends AbstractSqlType {
     return collation;
   }
 
+  @Override public boolean isAutoincrement() {
+    return isAutoincrement;
+  }
+
   // implement RelDataTypeImpl
   @Override protected void generateTypeString(StringBuilder sb, boolean withDetail) {
     // Called to make the digest, which equals() compares;
@@ -210,6 +226,9 @@ public class BasicSqlType extends AbstractSqlType {
       sb.append(" COLLATE \"");
       sb.append(collation.getCollationName());
       sb.append("\"");
+    }
+    if (isAutoincrement) {
+      sb.append(" AUTOINCREMENT");
     }
   }
 

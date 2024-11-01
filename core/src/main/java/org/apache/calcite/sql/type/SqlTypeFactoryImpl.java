@@ -253,6 +253,17 @@ public class SqlTypeFactoryImpl extends RelDataTypeFactoryImpl {
     return canonize(newType);
   }
 
+  @Override public RelDataType createTypeWithAutoIncrement(RelDataType type,
+      boolean isAutoincrement) {
+    final RelDataType newType;
+    if (type instanceof BasicSqlType) {
+      newType = ((BasicSqlType) type).createWithAutoincrement(isAutoincrement);
+    } else {
+      throw Util.needToImplement("Autoincrement is not supported for " + type);
+    }
+    return canonize(newType);
+  }
+
   private static void assertBasic(SqlTypeName typeName) {
     assert typeName != null;
     assert typeName != SqlTypeName.MULTISET

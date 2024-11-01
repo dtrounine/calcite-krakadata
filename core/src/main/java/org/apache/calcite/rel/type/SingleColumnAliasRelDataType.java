@@ -77,6 +77,10 @@ public class SingleColumnAliasRelDataType implements RelDataType {
     return original.isNullable();
   }
 
+  @Override public boolean isAutoincrement() {
+    return original.isAutoincrement();
+  }
+
   @Override public @Nullable RelDataType getComponentType() {
     return original.getComponentType();
   }

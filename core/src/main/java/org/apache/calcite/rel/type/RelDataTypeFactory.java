@@ -191,6 +191,10 @@ public interface RelDataTypeFactory {
       RelDataType type,
       boolean nullable);
 
+  RelDataType createTypeWithAutoIncrement(
+      RelDataType type,
+      boolean isAutoincrement);
+
   /**
    * Creates a type that is the same as another type but with possibly
    * different charset or collation. For types without a concept of charset or

@@ -250,6 +250,10 @@ public abstract class RelDataTypeImpl
     return false;
   }
 
+  @Override public boolean isAutoincrement() {
+    return false;
+  }
+
   @Override public @Nullable Charset getCharset() {
     return null;
   }

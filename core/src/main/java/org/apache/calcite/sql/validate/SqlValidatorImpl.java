@@ -5420,6 +5420,9 @@ public class SqlValidatorImpl implements SqlValidatorWithHints {
       case NULLABLE:
         assert field.getType().isNullable();
         break;
+      case AUTOINCREMENT:
+        assert field.getType().isAutoincrement();
+        break;
       case VIRTUAL:
       case STORED:
         if (targetField != null

@@ -51,7 +51,11 @@ public class NullInitializerExpressionFactory implements InitializerExpressionFa
   }
 
   @Override public ColumnStrategy generationStrategy(RelOptTable table, int iColumn) {
-    return table.getRowType().getFieldList().get(iColumn).getType().isNullable()
+    final RelDataType relType = table.getRowType().getFieldList().get(iColumn).getType();
+    if (relType.isAutoincrement()) {
+      return ColumnStrategy.AUTOINCREMENT;
+    }
+    return relType.isNullable()
         ? ColumnStrategy.NULLABLE
         : ColumnStrategy.NOT_NULLABLE;
   }

@@ -300,6 +300,11 @@ for (db in listOf("h2", "mysql", "oracle", "postgresql")) {
     }
 }
 
+java {
+    withSourcesJar()
+    withJavadocJar()
+}
+
 publishing {
     publications {
         group = "io.dtrounine.krakadata"

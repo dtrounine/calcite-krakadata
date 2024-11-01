@@ -78,6 +78,11 @@ ide {
     generatedSource(javaCCMain, "main")
 }
 
+java {
+    withSourcesJar()
+    withJavadocJar()
+}
+
 publishing {
     publications {
         group = "io.dtrounine.krakadata"
